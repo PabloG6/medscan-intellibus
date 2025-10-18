@@ -1,0 +1,30 @@
+{
+  "name": "intellibus",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "pnpm --filter \"./apps/**\" --parallel dev",
+    "build": "pnpm --filter \"./apps/**\" --filter \"./packages/**\" build",
+    "start": "pnpm --filter \"./apps/**\" --parallel start",
+    "lint": "pnpm --filter \"./apps/**\" --filter \"./packages/**\" lint",
+    "clean": "pnpm --recursive exec rm -rf node_modules .next dist",
+    "test": "pnpm --filter \"./apps/**\" --filter \"./packages/**\" test",
+    "cf:deploy": "pnpm --filter \"./apps/**\" deploy",
+    "cf:dev": "wrangler dev",
+    "cf:tail": "wrangler tail",
+    "cf:login": "wrangler login",
+    "cf:whoami": "wrangler whoami",
+    "cf:types": "wrangler types"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.12.4",
+  "devDependencies": {
+    "wrangler": "^4.43.0"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.44.6"
+  }
+}

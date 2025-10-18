@@ -1,0 +1,26 @@
+{
+  "name": "@ocr-monorepo/db",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./main.ts",
+  "types": "./main.ts",
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:local": "wrangler d1 migrations apply ocr-processor-dev --local --persist-to ../../.wrangler/state",
+    "db:migrate:remote": "wrangler d1 migrations apply ocr-processor-dev --remote",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "better-sqlite3": "^11.10.0",
+    "dotenv": "^17.2.1",
+    "kysely": "^0.27.6",
+    "kysely-d1": "^0.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.1",
+    "drizzle-kit": "^0.30.6",
+    "typescript": "^5.8.3",
+    "wrangler": "^4.23.0"
+  }
+}
