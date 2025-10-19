@@ -90,6 +90,6 @@ Doctors currently spend significant time **manually reviewing medical scans**, c
     "priority": "High"
   }
     
---
+---
 
 # Getting Started with **MedScan IntelliBus**
