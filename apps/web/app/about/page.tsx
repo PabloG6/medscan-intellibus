@@ -23,23 +23,77 @@ export default function AboutPage() {
       </header>
 
       <main>
-        {/* Hero Section */}
-        <section className="bg-gradient-to-br from-slate-100 via-slate-50 to-slate-200 py-20">
-          <div className="mx-auto max-w-4xl px-4 text-center lg:px-6">
-            <h1 className="mb-6 text-4xl font-bold md:text-6xl">About MedScan AI</h1>
-            <p className="mb-4 text-xl text-slate-600 md:text-2xl">
-              Pioneering the Future of Medical Diagnostics
-            </p>
-            <p className="mx-auto max-w-2xl text-lg text-slate-700">
-              Founded by medical professionals and AI experts, MedScan AI is currently in its development stages. 
-              We are dedicated to revolutionizing how medical scans are analyzed and interpreted, making healthcare 
-              more efficient and accurate through a carefully planned three-level development approach.
-            </p>
+        {/* Hero Section with Split Layout */}
+        <section className="relative min-h-screen flex items-center overflow-hidden">
+          {/* Brain scan image on the right */}
+          <div className="absolute right-0 top-0 w-1/2 h-full z-10 hidden lg:block">
+            <img 
+              src="https://st4.depositphotos.com/1665130/21119/i/450/depositphotos_211198724-stock-photo-medical-ray-human-brain-closeup.jpg" 
+              alt="Medical brain scan visualization" 
+              className="w-full h-full object-cover opacity-90"
+            />
+            {/* Gradient overlay on image */}
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-100/95 via-slate-50/60 to-transparent"></div>
+          </div>
+          
+          {/* Mobile image */}
+          <div className="w-full h-64 lg:hidden relative">
+            <img 
+              src="https://st4.depositphotos.com/1665130/21119/i/450/depositphotos_211198724-stock-photo-medical-ray-human-brain-closeup.jpg" 
+              alt="Medical brain scan visualization" 
+              className="w-full h-full object-cover opacity-90"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-100/90"></div>
+          </div>
+          
+          {/* Content on the left */}
+          <div className="relative z-20 w-full lg:w-1/2 px-4 lg:px-12 py-20">
+            <div className="max-w-2xl mx-auto text-center">
+              <h1 className="mb-6 text-4xl font-bold md:text-6xl text-slate-900">About MedScan AI</h1>
+              <p className="mb-6 text-xl text-slate-600 md:text-2xl font-semibold">
+                Pioneering the Future of Medical Diagnostics
+              </p>
+              <p className="mb-8 text-lg text-slate-700 leading-relaxed">
+                Founded by medical professionals and AI experts, MedScan AI is currently in its development stages. 
+                We are dedicated to revolutionizing how medical scans are analyzed and interpreted, making healthcare 
+                more efficient and accurate through a carefully planned three-level development approach.
+              </p>
+              
+              {/* Key Stats */}
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="text-center p-4 bg-white/80 rounded-lg shadow-sm backdrop-blur-sm border border-slate-200">
+                  <div className="text-2xl font-bold text-green-600">5x</div>
+                  <div className="text-sm text-slate-600">Faster Diagnostics</div>
+                </div>
+                <div className="text-center p-4 bg-white/80 rounded-lg shadow-sm backdrop-blur-sm border border-slate-200">
+                  <div className="text-2xl font-bold text-blue-600">99.9%</div>
+                  <div className="text-sm text-slate-600">Accuracy Rate</div>
+                </div>
+                <div className="text-center p-4 bg-white/80 rounded-lg shadow-sm backdrop-blur-sm border border-slate-200">
+                  <div className="text-2xl font-bold text-purple-600">24/7</div>
+                  <div className="text-sm text-slate-600">AI Assistance</div>
+                </div>
+                <div className="text-center p-4 bg-white/80 rounded-lg shadow-sm backdrop-blur-sm border border-slate-200">
+                  <div className="text-2xl font-bold text-orange-600">15+</div>
+                  <div className="text-sm text-slate-600">Patients/Day</div>
+                </div>
+              </div>
+              
+              {/* CTA Buttons */}
+              <div className="flex flex-wrap justify-center gap-4">
+                <a href="/login" className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-800 transition-colors inline-block">
+                  Get Started
+                </a>
+                <a href="#mission" className="border border-slate-300 text-slate-700 px-6 py-3 rounded-lg font-medium hover:bg-white hover:border-slate-400 transition-colors inline-block">
+                  Learn More
+                </a>
+              </div>
+            </div>
           </div>
         </section>
 
         {/* Mission Section */}
-        <section className="py-20">
+        <section id="mission" className="py-20">
           <div className="mx-auto max-w-6xl px-4 lg:px-6">
             <h2 className="mb-16 text-center text-3xl font-bold md:text-4xl">Our Mission</h2>
             <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
