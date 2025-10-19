@@ -83,7 +83,6 @@ export const ChatMessage = memo(function ChatMessage({
 
               const labels = message.metadata?.image?.labels ?? [];
               const alt = message.metadata?.image?.alt ?? part.filename ?? "Image attachment";
-              const editable = message.metadata?.image?.editable ?? message.role === "assistant";
 
               return (
                 <div key={`image-${index}`} className="mt-4">
@@ -91,7 +90,7 @@ export const ChatMessage = memo(function ChatMessage({
                     src={part.url}
                     alt={alt}
                     labels={labels}
-                    editable={editable}
+                    editable={false}
                     onLabelsChange={(updated) => onImageLabelsChange?.(message.id, updated)}
                     className="w-full rounded-[1px]"
                   />

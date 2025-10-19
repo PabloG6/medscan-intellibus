@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { QueryClient, QueryClientProvider, defaultShouldDehydrateQuery } from "@tanstack/react-query";
-import { loggerLink, httpLink, createTRPCClient } from "@trpc/client";
+import { createTRPCClient, httpBatchLink, httpLink, loggerLink } from "@trpc/client";
 import SuperJSON from "superjson";
+import { TooltipProvider } from "@radix-ui/react-tooltip";
 
 import { env } from "@/env";
-import { TooltipProvider } from "@radix-ui/react-tooltip";
-import { AppRouter } from "@/server/trpc/router";
+import type { AppRouter } from "@/server/trpc/router";
 import { TRPCProvider } from "@/lib/trpc/client";
 
 const getBaseUrl = () => {
@@ -47,29 +47,29 @@ function getQueryClient() {
 
 export function TRPCClientProvider({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
-
-   const [trpcClient] = useState(() => {
-    return createTRPCClient<AppRouter>({
+  const [trpcClient] = useState(() =>
+    createTRPCClient<AppRouter>({
       links: [
         loggerLink({
           enabled(op) {
-            return (
-              op.direction === "down" &&
-              op.result instanceof Error
-            );
+            return op.direction === "down" && op.result instanceof Error;
           },
         }),
-        httpLink({
-          url: getBaseUrl() + "/api/trpc",
+        httpBatchLink({
           transformer: SuperJSON,
+          url: `${getBaseUrl()}/api/trpc`
         }),
       ],
-    });
-  });
+    }),
+  );
 
   return (
-    <TooltipProvider>       <QueryClientProvider client={queryClient}><TRPCProvider queryClient={queryClient} trpcClient={trpcClient} >{children}</TRPCProvider></QueryClientProvider>
-      
+    <TooltipProvider>
+      <QueryClientProvider client={queryClient}>
+        <TRPCProvider queryClient={queryClient} trpcClient={trpcClient}>
+          {children}
+        </TRPCProvider>
+      </QueryClientProvider>
     </TooltipProvider>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from "react";
+import { Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -42,7 +43,7 @@ const defaultValues: LoginFormValues = {
   rememberMe: false,
 };
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [serverError, setServerError] = React.useState<string | null>(null);
@@ -241,5 +242,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-muted" />}>
+      <LoginForm />
+    </Suspense>
   );
 }

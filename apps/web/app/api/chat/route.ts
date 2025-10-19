@@ -11,6 +11,7 @@ import {
   getChat,
   getChatMessages,
   insertChatMessage,
+  updateChat,
 } from "@intellibus/db";
 import type { DiagnosisChatMessage } from "@/components/chat/types";
 import {
@@ -19,6 +20,7 @@ import {
 } from "@/lib/chat/transformers";
 import { getDB } from "@intellibus/db";
 import { analyzeCTScan } from "@/lib/chat/analyze-ct";
+import { generateChatMetadata } from "@/lib/chat/generate-chat-metadata";
 import type { ImageLabel } from "@/components/image-with-labels";
 
 export const maxDuration = 30;
@@ -27,6 +29,7 @@ type ChatRequestBody = {
   chatId?: string | null;
   messages?: DiagnosisChatMessage[];
   title?: string;
+  description?: string;
 };
 
 export async function POST(request: Request) {
@@ -53,7 +56,8 @@ export async function POST(request: Request) {
     (body.chatId ? await getChat(db, body.chatId, session.user.id) : null) ??
     (await createChat(db, {
       userId: session.user.id,
-      title: body.title ?? "New Chat",
+      title: "Untitled",
+      description: "New diagnostic session",
     }));
 
   if (messages.length === 0) {
@@ -199,6 +203,20 @@ export async function POST(request: Request) {
     diagnosisMessageToInsertParams(assistantMessage, chat),
     session.user.id,
   );
+
+  // Generate AI title after first assistant message if chat is still "Untitled"
+  if (chat.title === "Untitled") {
+    const metadata = await generateChatMetadata();
+    await updateChat(
+      db,
+      {
+        chatId: chat.id,
+        title: metadata.title,
+        description: metadata.description,
+      },
+      session.user.id,
+    );
+  }
 
   const stream = createUIMessageStream({
     originalMessages: uiMessages,

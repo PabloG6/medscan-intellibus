@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getAuth } from "@/lib/auth";
 import { getDB, createChat, getChat, getChatMessages } from "@intellibus/db";
+import { generateChatMetadata } from "@/lib/chat/generate-chat-metadata";
 import type { DiagnosisChatMessage } from "@/components/chat/types";
 import { dbMessageToDiagnosisMessage } from "@/lib/chat/transformers";
 import { DashboardClient } from "./dashboard-client";
@@ -32,6 +33,8 @@ export default async function DashboardPage(props: DashboardPageProps) {
   if (!chat) {
     chat = await createChat(db, {
       userId: session.user.id,
+      title: "Untitled",
+      description: "New diagnostic session",
     });
     redirect(`/dashboard?chatId=${chat.id}`);
   }

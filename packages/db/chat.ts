@@ -17,6 +17,7 @@ export type ChatMessageMetadata = Record<string, unknown> | null;
 export interface CreateChatParams {
   userId: string;
   title?: string;
+  description?: string;
 }
 
 export interface InsertChatMessageParams {
@@ -54,6 +55,7 @@ export async function createChat(db: Database, params: CreateChatParams): Promis
     id: chatId,
     userId: params.userId,
     title: params.title ?? "New Chat",
+    description: params.description ?? "AI-assisted diagnostic conversation",
     createdAt: now,
     updatedAt: now,
   });
@@ -86,6 +88,50 @@ export async function getChat(db: Database, chatId: string, userId: string): Pro
   });
 
   return record ?? null;
+}
+
+export interface UpdateChatParams {
+  chatId: string;
+  title?: string;
+  description?: string;
+}
+
+export async function updateChat(
+  db: Database,
+  params: UpdateChatParams,
+  userId: string,
+): Promise<Chat> {
+  const database = resolveDb(db);
+
+  const chat = await getChat(database, params.chatId, userId);
+  if (!chat) {
+    throw new Error("Chat not found");
+  }
+
+  const updates: Partial<Chat> = {
+    updatedAt: new Date(),
+  };
+
+  if (params.title !== undefined) {
+    updates.title = params.title;
+  }
+
+  if (params.description !== undefined) {
+    updates.description = params.description;
+  }
+
+  await database
+    .update(chats)
+    .set(updates)
+    .where(and(eq(chats.id, params.chatId), eq(chats.userId, userId)));
+
+  const updated = await getChat(database, params.chatId, userId);
+
+  if (!updated) {
+    throw new Error("Failed to update chat");
+  }
+
+  return updated;
 }
 
 export async function getChatMessages(
