@@ -1,6 +1,8 @@
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "intellibus-web-dev",
+  "main": ".open-next/worker.js",
+  "keep_vars": true,
   "compatibility_date": "2025-09-15",
   "compatibility_flags": [
     "nodejs_compat",
@@ -8,6 +10,10 @@
     "enable_nodejs_http_modules",
     "no_handle_cross_request_promise_resolution"
   ],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
   "dev": {
     "ip": "localhost",
     "port": 8787,
@@ -40,6 +46,35 @@
   "observability": {
     "logs": {
       "enabled": true
+    }
+  },
+  "env": {
+    "production": {
+      "name": "intellibus-web-prod-production",
+      "vars": {
+        "NEXT_PUBLIC_BASE_URL": "https://intellibus-web-prod.pages.dev",
+        "ENVIRONMENT": "production"
+      },
+      "kv_namespaces": [
+        {
+          "binding": "KV",
+          "id": "80fe979c50074a43908f222373aaf66a"
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "CACHE_BUCKET",
+          "bucket_name": "intellibus-cache-prod"
+        }
+      ],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "intellibus-prod",
+          "database_id": "2586dbbb-10ba-4085-823b-c33a09af8b80",
+          "migrations_dir": "../../packages/db/drizzle"
+        }
+      ]
     }
   }
 }

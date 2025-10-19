@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:migrate:local": "wrangler d1 migrations apply intellibus-dev --local --persist-to ../../.wrangler/state"
+    "deploy": "opennextjs-cloudflare build && wrangler deploy",
+    "deploy:prod": "opennextjs-cloudflare build && wrangler deploy --env production",
+    "db:migrate:local": "wrangler d1 migrations apply intellibus-dev --local --persist-to ../../.wrangler/state",
+    "db:migrate:remote": "wrangler d1 migrations apply intellibus-dev --remote",
+    "db:migrate:prod": "wrangler d1 migrations apply intellibus-prod --remote --env production"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^2.0.33",

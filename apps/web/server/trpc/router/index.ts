@@ -12,7 +12,6 @@ export const appRouter = createTRPCRouter({
       }
 
       const chats = await listChats(ctx.db, userId);
-      console.log(chats);
       return chats;
     }),
 });
