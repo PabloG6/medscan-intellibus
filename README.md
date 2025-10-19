@@ -2,8 +2,6 @@
 
 **Live Website:** https://intellibus-web-prod-production.glues-gliders0w.workers.dev/
 
-Getting Started with **MedScan IntelliBus**
-
 ---
 
 ## Introduction
@@ -91,3 +89,7 @@ Doctors currently spend significant time **manually reviewing medical scans**, c
     "findings": ["Lesion Detected", "Possible Fluid Build-up"],
     "priority": "High"
   }
+    
+--
+
+# Getting Started with **MedScan IntelliBus**
