@@ -1,6 +1,6 @@
 # MedScan IntelliBus: Quick Start  
 
-**Live Website:* https://intellibus-web-prod-production.glues-gliders0w.workers.dev/
+**Live Website:** https://intellibus-web-prod-production.glues-gliders0w.workers.dev/
 
 Getting Started with **MedScan IntelliBus**
 
