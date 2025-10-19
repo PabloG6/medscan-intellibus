@@ -17,26 +17,25 @@
     "NEXT_PUBLIC_BASE_URL": "http://localhost:8787",
     "ENVIRONMENT": "development"
   },
-  // Uncomment and configure these bindings as needed for local development
-  // "kv_namespaces": [
-  //   {
-  //     "binding": "KV",
-  //     "id": "local-kv-namespace"
-  //   }
-  // ],
-  // "r2_buckets": [
-  //   {
-  //     "binding": "CACHE_BUCKET",
-  //     "bucket_name": "local-cache"
-  //   }
-  // ],
-  // "d1_databases": [
-  //   {
-  //     "binding": "DB",
-  //     "database_name": "local-db",
-  //     "database_id": "local"
-  //   }
-  // ],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "local-kv-namespace"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "CACHE_BUCKET",
+      "bucket_name": "local-cache"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "intellibus-dev",
+      "database_id": "local"
+    }
+  ],
   "observability": {
     "logs": {
       "enabled": true

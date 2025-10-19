@@ -15,7 +15,12 @@
     "cf:tail": "wrangler tail",
     "cf:login": "wrangler login",
     "cf:whoami": "wrangler whoami",
-    "cf:types": "wrangler types"
+    "cf:types": "wrangler types",
+    "db:generate": "pnpm --filter @intellibus/db db:generate",
+    "db:migrate": "pnpm --filter @intellibus/db db:migrate:local",
+    "db:migrate:local": "pnpm --filter @intellibus/db db:migrate:local",
+    "db:migrate:remote": "pnpm --filter @intellibus/db db:migrate:remote",
+    "db:studio": "pnpm --filter @intellibus/db db:studio"
   },
   "keywords": [],
   "author": "",

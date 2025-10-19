@@ -3,8 +3,10 @@ export const users = sqliteTable("users", {
 	id: text('id').primaryKey(),
 	name: text('name').notNull(),
 	customerId: text('paddle_customer_id'),
+	organization: text('organization').notNull(),
 	email: text('email').notNull().unique(),
-	
+	receiveUpdates: integer('receive_updates', { mode: 'boolean' }).default(false).notNull(),
+	acceptedTermsAt: integer('accepted_terms_at', { mode: 'timestamp' }).$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
 	emailVerified: integer('email_verified', { mode: 'boolean' }).$defaultFn(() => false).notNull(),
 	image: text('image'),
 	createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),

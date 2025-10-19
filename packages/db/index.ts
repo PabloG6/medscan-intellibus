@@ -1,5 +1,5 @@
 import { drizzle } from "drizzle-orm/d1";
-import { schema, subscriptions } from "./schema";
+import { schema } from "./schema";
 import { eq, and, desc } from "drizzle-orm";
 
 // Note: These imports will be available when used in the website context
@@ -14,7 +14,7 @@ try {
 }
 
 try {
-  const envModule = require("@ocr-monorepo/website/env");
+  const envModule = require("@intellibus/web/env");
   env = envModule.env;
 } catch (e) {
   // Module not available in this context
@@ -26,7 +26,7 @@ export async function getDB() {
   if (!getCloudflareContext) {
     throw new Error("Cloudflare context not available");
   }
-  
+
   const { env: cfEnv } = await getCloudflareContext({ async: true });
   const d1Binding = (cfEnv as Cloudflare.Env).DB;
 
@@ -35,20 +35,4 @@ export async function getDB() {
 
 export async function createDB(d1: D1Database) {
   return drizzle(d1, {schema: schema});
-}
-
-export async function getUserActiveSubscription(userId: string) {
-  const db = await getDB();
-  
-  const [currentSubscription] = await db
-    .select()
-    .from(subscriptions)
-    .where(and(
-      eq(subscriptions.user_id, userId),
-      eq(subscriptions.status, "active")
-    ))
-    .orderBy(desc(subscriptions.createdAt))
-    .limit(1);
-
-  return currentSubscription;
 }

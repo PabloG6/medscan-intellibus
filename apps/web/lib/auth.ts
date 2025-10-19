@@ -3,14 +3,14 @@ import { env } from '@/env';
 import { betterAuth } from 'better-auth';
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { withCloudflare } from 'better-auth-cloudflare';
-
+import {getDB} from '@intellibus/db';
 const getTrustedOrigins = () => {
 
    return ['http://localhost:3000']
 };
 
 export const authBuilder = async () => {
-    // const db = await getDB();
+    const db = await getDB();
 
     return betterAuth({
         ...withCloudflare(
@@ -19,7 +19,7 @@ export const authBuilder = async () => {
                 geolocationTracking: true,
                 cf: getCloudflareContext().cf,
                 d1: {
-                    // @ts-ignore - Drizzle type compatibility with better-auth-cloudflare
+                    // @ts-expect-error - Drizzle type compatibility with better-auth-cloudflare
                     db: db,
                     options: {
                         usePlural: true, // Optional: Use plural table names (e.g., "users" instead of "user")
@@ -50,6 +50,19 @@ export const authBuilder = async () => {
                         customerId: {
                             type: 'string',
                             required: false
+                        },
+                        organization: {
+                            type: 'string',
+                            required: true
+                        },
+                        receiveUpdates: {
+                            type: 'boolean',
+                            required: false,
+                            defaultValue: false
+                        },
+                        acceptedTermsAt: {
+                            type: 'date',
+                            required: true
                         }
                     }
                 },
