@@ -1,6 +1,6 @@
 # MedScan IntelliBus: Quick Start  
-URL: /docs/medscan  
-Source: https://raw.githubusercontent.com/PabloG6/medscan-intellibus/main/README.md  
+
+**Live Website:* https://intellibus-web-prod-production.glues-gliders0w.workers.dev/
 
 Getting Started with **MedScan IntelliBus**
 
