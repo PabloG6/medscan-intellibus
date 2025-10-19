@@ -1,46 +1,46 @@
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { getAuth } from "@/lib/auth";
-import { getDB, createChat, getChat, getChatMessages } from "@intellibus/db";
-import { generateChatMetadata } from "@/lib/chat/generate-chat-metadata";
-import type { DiagnosisChatMessage } from "@/components/chat/types";
-import { dbMessageToDiagnosisMessage } from "@/lib/chat/transformers";
+"use client";
+
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useTRPC } from "@/lib/trpc/client";
 import { DashboardClient } from "./dashboard-client";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
-interface DashboardPageProps {
-  searchParams: Promise<Record<string, string | undefined>>;
-}
+export default function DashboardPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const requestedChatId = searchParams?.get("chatId") || undefined;
+  const trpc = useTRPC();
+  const { mutate: initialize, data, isPending } = useMutation(trpc.dashboardInitialize.mutationOptions({
+    onSuccess: (result) => {
+      if ("redirect" in result && result.redirect) {
+        router.push(result.redirect);
+      }
+    },
+    onError: (error) => {
+      if (error.data?.code === "UNAUTHORIZED") {
+        router.push("/login");
+      } else {
+        console.error("Error initializing dashboard:", error);
+      }
+    },
+  }));
 
-export default async function DashboardPage(props: DashboardPageProps) {
-  const searchParams = await props.searchParams;
-  const requestedChatId = searchParams?.chatId;
-  const headerList = await headers();
-  const auth = await getAuth();
-  const session = await auth.api.getSession({
-    headers: Object.fromEntries(headerList.entries()),
-  });
+  useEffect(() => {
+    initialize({ chatId: requestedChatId });
+  }, [requestedChatId]);
 
-  if (!session || !session.user?.id) {
-    redirect("/login");
+  if (isPending || !data) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
   }
 
-  const db = await getDB();
-
-  let chat = requestedChatId
-    ? await getChat(db, requestedChatId, session.user.id)
-    : null;
-
-  if (!chat) {
-    chat = await createChat(db, {
-      userId: session.user.id,
-      title: "Untitled",
-      description: "New diagnostic session",
-    });
-    redirect(`/dashboard?chatId=${chat.id}`);
+  if ("redirect" in data) {
+    return null;
   }
 
-  const dbMessages = await getChatMessages(db, chat.id, session.user.id);
-  const initialMessages: DiagnosisChatMessage[] = dbMessages.map(dbMessageToDiagnosisMessage);
-
-  return <DashboardClient chatId={chat.id} initialMessages={initialMessages} />;
+  return <DashboardClient chatId={data.chatId} initialMessages={data.messages} />;
 }

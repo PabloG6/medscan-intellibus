@@ -378,29 +378,7 @@ export default function CreateAccountPage() {
                     </Link>
                     .
                   </div>
-                  <div className="mt-6 space-y-3 rounded-lg border border-border bg-muted/40 p-4 text-xs text-muted-foreground">
-                    <p className="text-sm font-semibold text-foreground">Demo access</p>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <div className="space-y-1">
-                        <p className="font-medium text-foreground">Medical Demo</p>
-                        <p>
-                          Email: <span className="font-medium text-foreground">demo@medscan.ai</span>
-                        </p>
-                        <p>
-                          Password: <span className="font-medium text-foreground">demo123</span>
-                        </p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="font-medium text-foreground">Admin Demo</p>
-                        <p>
-                          Email: <span className="font-medium text-foreground">admin@gmail.com</span>
-                        </p>
-                        <p>
-                          Password: <span className="font-medium text-foreground">password</span>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+          
                 </CardContent>
               </Card>
             </div>

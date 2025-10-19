@@ -6,13 +6,15 @@ import { createTRPCClient, httpBatchLink, httpLink, loggerLink } from "@trpc/cli
 import SuperJSON from "superjson";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 
-import { env } from "@/env";
 import type { AppRouter } from "@/server/trpc/router";
 import { TRPCProvider } from "@/lib/trpc/client";
 
 const getBaseUrl = () => {
-  if (typeof window !== "undefined") return window.location.origin;
-  if (env.NEXT_PUBLIC_BASE_URL) return `https://${env.NEXT_PUBLIC_BASE_URL}`;
+  // In production, construct URL from window.location
+  if (typeof window !== 'undefined') {
+    return `${window.location.protocol}//${window.location.host}`;
+  }
+  // Fallback for SSR (though this component is client-side only)
   return `http://localhost:${process.env.PORT ?? 3000}`;
 };
 

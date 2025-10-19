@@ -5,8 +5,33 @@ import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { withCloudflare } from 'better-auth-cloudflare';
 import {getDB} from '@intellibus/db';
 const getTrustedOrigins = () => {
+    if (env.ENVIRONMENT === 'development') {
+        return [
+            'http://localhost:3000',
+            'http://localhost:8787'
+        ];
+    }
+    if (env.ENVIRONMENT === 'staging') {
+        return [
+            // Add your staging URL here when available
+            'https://intellibus-web-staging.workers.dev'
+        ];
+    }
+    // Production environment
+    return [
+        'https://intellibus-web-prod-production.glues-gliders0w.workers.dev'
+    ];
+};
 
-   return ['http://localhost:3000']
+const getBaseURL = () => {
+    if (env.ENVIRONMENT === 'development') {
+        return 'http://localhost:8787';
+    }
+    if (env.ENVIRONMENT === 'staging') {
+        return 'https://intellibus-web-staging.workers.dev';
+    }
+    // Production environment
+    return 'https://intellibus-web-prod-production.glues-gliders0w.workers.dev';
 };
 
 export const authBuilder = async () => {
@@ -70,7 +95,7 @@ export const authBuilder = async () => {
                         }
                     }
                 },
-                baseURL: env.NEXT_PUBLIC_BASE_URL,
+                baseURL: getBaseURL(),
                 emailVerification: {
                     autoSignInAfterVerification: true,
                     sendVerificationEmail: async ({ user, url }) => {

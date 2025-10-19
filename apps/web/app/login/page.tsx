@@ -77,8 +77,8 @@ function LoginForm() {
         return;
       }
 
-      if (data?.redirectTo) {
-        router.push(data.redirectTo);
+      if (data?.redirect) {
+        router.push("/dashboard");
       } else {
         router.push(nextPath);
       }

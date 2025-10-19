@@ -52,7 +52,7 @@
     "production": {
       "name": "intellibus-web-prod-production",
       "vars": {
-        "NEXT_PUBLIC_BASE_URL": "https://intellibus-web-prod.pages.dev",
+        "NEXT_PUBLIC_BASE_URL": "https://intellibus-web-prod-production.glues-gliders0w.workers.dev",
         "ENVIRONMENT": "production"
       },
       "kv_namespaces": [

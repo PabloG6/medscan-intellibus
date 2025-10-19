@@ -1,7 +1,7 @@
 'use server';
 
 import { generateObject } from "ai";
-import { anthropic } from "@ai-sdk/anthropic";
+import { google } from "@ai-sdk/google";
 import { z } from "zod";
 
 const chatMetadataSchema = z.object({
@@ -19,7 +19,7 @@ const defaultMetadata: ChatMetadata = {
 export async function generateChatMetadata(): Promise<ChatMetadata> {
   try {
     const result = await generateObject({
-      model: anthropic("claude-3-5-sonnet-20241022"),
+      model: google("gemini-2.5-flash"),
       schema: chatMetadataSchema,
       messages: [
         {
