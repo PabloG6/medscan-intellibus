@@ -1,0 +1,15 @@
+torch
+torchxrayvision
+pillow
+torchvision
+pydicom
+scikit-image
+numpy
+fastapi
+uvicorn
+datasets
+tqdm
+fastapi
+python-multipart
+opencv-python
+grad-cam
