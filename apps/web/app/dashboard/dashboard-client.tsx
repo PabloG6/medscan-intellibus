@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Activity, ArrowUp, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatMessage } from "@/components/chat/chat-message";
 import type { DiagnosisAttachment, DiagnosisChatMessage } from "@/components/chat/types";
@@ -223,6 +222,7 @@ export function DashboardClient({ chatId, initialMessages }: DashboardClientProp
               <div className="flex h-8 w-8 items-center justify-center rounded-[1px] bg-black md:hidden">
                 <Activity className="h-5 w-5 text-white" />
               </div>
+           
               <div>
                 <h1 className="text-lg">Medical Image Analysis</h1>
                 <p className="text-xs opacity-60">AI-Powered Diagnosis Assistant</p>
@@ -230,10 +230,7 @@ export function DashboardClient({ chatId, initialMessages }: DashboardClientProp
             </div>
           </div>
 
-          <Button variant="outline" size="sm" onClick={createNewChat}>
-            <Plus className="mr-2 h-4 w-4" />
-            New Chat
-          </Button>
+     
         </div>
       </header>
 

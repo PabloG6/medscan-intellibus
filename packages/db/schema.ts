@@ -13,6 +13,7 @@ export type ChatMessageRole = (typeof chatMessageRoleEnum)[number];
 export const chats = sqliteTable("chats", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   title: text("title").notNull().default("New Chat"),
+  description: text("description").notNull().default("AI-assisted diagnostic conversation"),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
   userId: text("user_id")

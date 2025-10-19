@@ -1,23 +1,19 @@
-import { z } from "zod"
-
-import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc"
+import { TRPCError } from "@trpc/server";
+import { listChats } from "@intellibus/db";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const appRouter = createTRPCRouter({
-  createPatient: publicProcedure.input(z.object({name: z.string()})).mutation(({input}) => {}),
-  health: publicProcedure.query(() => ({
-    status: "ok",
-    timestamp: new Date().toISOString(),
-  })),
-  me: protectedProcedure.query(({ ctx }) => {
-    return {
-      user: ctx.session?.user ?? null,
-    }
-  }),
-  echo: publicProcedure.input(z.object({ message: z.string().min(1) })).mutation(({ input }) => {
-    return {
-      message: input.message,
-    }
-  }),
-})
+  chatHistory: protectedProcedure
+    .query(async ({ ctx }) => {
+      const userId = ctx.session?.user?.id;
 
-export type AppRouter = typeof appRouter
+      if (!userId) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      const chats = await listChats(ctx.db, userId);
+      return chats;
+    }),
+});
+
+export type AppRouter = typeof appRouter;
