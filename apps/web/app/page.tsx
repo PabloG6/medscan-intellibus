@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "Features", href: "#features" },
-  { label: "About", href: "#about" },
+  { label: "About", href: "/about" },
 ]
 
 const problemItems = [
