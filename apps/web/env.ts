@@ -6,6 +6,7 @@ export const env = createEnv({
         ANTHROPIC_API_KEY: z.string(),
         GOOGLE_GENERATIVE_AI_API_KEY: z.string(),
         ENVIRONMENT: z.enum(['development', 'staging', 'production']).default('development'),
+        VISION_API_URL: z.string().url().default('http://localhost:8000'),
     }, client: {
         NEXT_PUBLIC_BASE_URL: z.string().optional(),
     }, experimental__runtimeEnv: {

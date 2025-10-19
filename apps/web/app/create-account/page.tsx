@@ -76,6 +76,8 @@ const benefits = [
 export default function CreateAccountPage() {
   const router = useRouter()
   const [serverError, setServerError] = React.useState<string | null>(null)
+  const [loading, setIsLoading] = React.useState<boolean>(false);
+  const [validationError, setValidationError] = React.useState<string | null>(null)
   const form = useForm<CreateAccountFormValues>({
     resolver: zodResolver(createAccountSchema),
     defaultValues,
@@ -83,10 +85,15 @@ export default function CreateAccountPage() {
 
   const isSubmitting = form.formState.isSubmitting
 
-  async function handleSubmit(values: CreateAccountFormValues) {
+  // Catch unhandled promise rejections from validation
+  
+  async function handleSubmit(values: CreateAccountFormValues, e?: React.BaseSyntheticEvent) {
+    e?.preventDefault();
     setServerError(null)
+    setValidationError(null)
 
     try {
+      setIsLoading(true);
       const { data, error } = await authClient.signUp.email({
         name: values.fullName.trim(),
         email: values.email.trim().toLowerCase(),
@@ -96,20 +103,58 @@ export default function CreateAccountPage() {
       })
 
       if (error) {
-        const friendlyMessage =
-          error.message ??
-          (error.status === 422
-            ? "Please double-check the form details and try again."
-            : "We couldn't complete your request right now. Please try again shortly.")
+        let friendlyMessage = error.message || "An error occurred during signup."
+
+        // Handle specific error cases
+        if (error.status === 400) {
+          if (error.message?.toLowerCase().includes("email")) {
+            friendlyMessage = "This email address is already registered. Please sign in or use a different email."
+          } else if (error.message?.toLowerCase().includes("password")) {
+            friendlyMessage = "Password does not meet security requirements. Please use at least 8 characters."
+          }
+        } else if (error.status === 422) {
+          friendlyMessage = "Please check all fields and try again."
+        } else if (error.status === 500) {
+          friendlyMessage = "Server error. Please try again in a moment."
+        }
+
         setServerError(friendlyMessage)
         return
       }
-
+      setIsLoading(false);
       // Redirect to dashboard on success
       router.push("/dashboard")
-    } catch {
+    } catch (err) {
+      setIsLoading(false);
+      console.error("Signup error:", err)
       setServerError("Something went wrong while creating your account. Please try again.")
     }
+  }
+
+  // Handle validation errors
+  const onInvalid = (errors: typeof form.formState.errors) => {
+    console.log("Validation errors:", errors)
+
+    // Build error message based on what's missing
+    let errorMessage = ""
+
+    if (errors.acceptTerms) {
+      errorMessage = "Please agree to the terms and privacy policy to continue."
+    } else if (errors.confirmPassword?.message?.includes("match")) {
+      errorMessage = "Passwords must match."
+    } else if (errors.organization) {
+      errorMessage = "Organization or facility is required."
+    } else if (errors.fullName) {
+      errorMessage = "Full name is required."
+    } else if (errors.email) {
+      errorMessage = errors.email.message || "Enter a valid email address."
+    } else if (errors.password) {
+      errorMessage = errors.password.message || "Password must be at least 8 characters."
+    } else if (Object.keys(errors).length > 0) {
+      errorMessage = "Please fill in all required fields correctly."
+    }
+
+   
   }
 
   return (
@@ -154,7 +199,7 @@ export default function CreateAccountPage() {
             <div className="relative pt-8">
               <div className="rounded-2xl bg-primary-foreground/10 p-6 backdrop-blur">
                 <p className="text-sm font-medium uppercase tracking-wide text-primary-foreground/80">
-                  Platform Snapshot
+                  Strategic Goals
                 </p>
                 <div className="mt-4 grid gap-4 sm:grid-cols-2">
                   <div>
@@ -191,33 +236,30 @@ export default function CreateAccountPage() {
                 </CardHeader>
 
                 <CardContent className="px-0 pt-6">
-                  {serverError ? (
+                  {(serverError || validationError) && (
                     <div className="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                      {serverError}
+                      {serverError || validationError}
                     </div>
-                  ) : null}
+                  )}
                   <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
                       <div className="grid gap-4">
                         <FormField
-                          control={form.control}
                           name="fullName"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Full name</FormLabel>
-                              <FormControl>
+                       
                                 <Input
                                   placeholder="Dr. Jane Doe"
                                   autoComplete="name"
                                   {...field}
                                 />
-                              </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
                         <FormField
-                          control={form.control}
                           name="organization"
                           render={({ field }) => (
                             <FormItem>
@@ -234,12 +276,10 @@ export default function CreateAccountPage() {
                           )}
                         />
                         <FormField
-                          control={form.control}
                           name="email"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Email address</FormLabel>
-                              <FormControl>
                                 <Input
                                   type="email"
                                   placeholder="you@hospital.org"
@@ -247,16 +287,14 @@ export default function CreateAccountPage() {
                                   inputMode="email"
                                   {...field}
                                 />
-                              </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
                         <div className="grid gap-4 sm:grid-cols-2">
                           <FormField
-                            control={form.control}
                             name="password"
-                            render={({ field }) => (
+                            render={({ field, fieldState }) => (
                               <FormItem>
                                 <FormLabel>Password</FormLabel>
                                 <FormControl>
@@ -267,24 +305,26 @@ export default function CreateAccountPage() {
                                     {...field}
                                   />
                                 </FormControl>
+                                {!fieldState.error && (
+                                  <p className="text-xs text-muted-foreground">
+                                    At least 8 characters
+                                  </p>
+                                )}
                                 <FormMessage />
                               </FormItem>
                             )}
                           />
                           <FormField
-                            control={form.control}
                             name="confirmPassword"
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Confirm password</FormLabel>
-                                <FormControl>
                                   <Input
                                     type="password"
                                     placeholder="Confirm password"
                                     autoComplete="new-password"
                                     {...field}
                                   />
-                                </FormControl>
                                 <FormMessage />
                               </FormItem>
                             )}
@@ -323,33 +363,38 @@ export default function CreateAccountPage() {
                         <FormField
                           control={form.control}
                           name="acceptTerms"
-                          render={({ field }) => (
+                          render={({ field, fieldState }) => (
                             <FormItem className="space-y-2">
-                              <div className="flex flex-row items-start gap-3">
+                              <div className={`flex flex-row items-start gap-3 rounded-lg border px-4 py-3 ${
+                                fieldState.error ? "border-destructive bg-destructive/5" : "border-border/80 bg-muted/40"
+                              }`}>
                                 <FormControl>
                                   <Checkbox
                                     id={field.name}
                                     checked={field.value}
                                     onCheckedChange={field.onChange}
+                                    className={fieldState.error ? "border-destructive" : ""}
                                   />
                                 </FormControl>
                                 <div className="space-y-1 leading-none">
-                                  <FormLabel htmlFor={field.name} className="text-sm font-medium">
-                                    I agree to the MedScan AI terms and privacy policy
+                                  <FormLabel htmlFor={field.name} className={`text-sm font-medium ${
+                                    fieldState.error ? "text-destructive" : ""
+                                  }`}>
+                                    I agree to the MedScan AI terms and privacy policy *
                                   </FormLabel>
                                   <p className="text-xs text-muted-foreground">
                                     Your account request will be reviewed by our compliance team before activation.
                                   </p>
                                 </div>
                               </div>
-                              <FormMessage />
+                              <FormMessage className="text-destructive font-medium" />
                             </FormItem>
                           )}
                         />
                       </div>
 
-                      <Button type="submit" className="w-full" disabled={isSubmitting}>
-                        {isSubmitting ? "Creating account..." : "Create account"}
+                      <Button type="submit" className="w-full" disabled={loading}>
+                        {loading ? "Creating account..." : "Create account"}
                       </Button>
                     </form>
                   </Form>

@@ -47,10 +47,13 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [serverError, setServerError] = React.useState<string | null>(null);
+  const [validationError, setValidationError] = React.useState<string | null>(null);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues,
+    mode: "onSubmit", // Only validate when form is submitted
+    reValidateMode: "onChange", // Re-validate on every change after first submit
   });
 
   const isSubmitting = form.formState.isSubmitting;
@@ -58,6 +61,7 @@ function LoginForm() {
 
   async function handleSubmit(values: LoginFormValues) {
     setServerError(null);
+    setValidationError(null);
 
     try {
       const { data, error } = await authClient.signIn.email({
@@ -68,11 +72,19 @@ function LoginForm() {
       });
 
       if (error) {
-        const friendlyMessage =
-          error.message ??
-          (error.status === 401
-            ? "The email or password you entered is incorrect."
-            : "We couldn’t sign you in right now. Please try again in a moment.");
+        let friendlyMessage = error.message || "An error occurred during sign in."
+
+        // Handle specific error cases
+        if (error.status === 401) {
+          friendlyMessage = "Invalid email or password. Please check your credentials and try again."
+        } else if (error.status === 403) {
+          friendlyMessage = "Your account is not active. Please contact support."
+        } else if (error.status === 429) {
+          friendlyMessage = "Too many login attempts. Please wait a few minutes and try again."
+        } else if (error.status === 500) {
+          friendlyMessage = "Server error. Please try again in a moment."
+        }
+
         setServerError(friendlyMessage);
         return;
       }
@@ -82,9 +94,24 @@ function LoginForm() {
       } else {
         router.push(nextPath);
       }
-    } catch {
+    } catch (err) {
+      console.error("Login error:", err)
       setServerError("Something went wrong while signing you in. Please try again.");
     }
+  }
+
+  // Handle validation errors
+  const onInvalid = (errors: typeof form.formState.errors) => {
+    console.log("Validation errors:", errors)
+
+    if (Object.keys(errors).length > 0) {
+      setValidationError("Please fill in all required fields correctly.")
+    }
+
+    // Scroll to first error
+    const firstError = Object.keys(errors)[0]
+    const element = document.getElementsByName(firstError)[0]
+    element?.scrollIntoView({ behavior: "smooth", block: "center" })
   }
 
   return (
@@ -156,14 +183,14 @@ function LoginForm() {
                 </CardHeader>
 
                 <CardContent className="px-0 pt-6">
-                  {serverError ? (
+                  {(serverError || validationError) && (
                     <div className="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                      {serverError}
+                      {serverError || validationError}
                     </div>
-                  ) : null}
+                  )}
 
                   <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+                    <form onSubmit={form.handleSubmit(handleSubmit, onInvalid)} className="space-y-6">
                       <FormField
                         control={form.control}
                         name="email"

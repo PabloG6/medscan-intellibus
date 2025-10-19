@@ -1,13 +1,32 @@
 import base64
+import asyncio
 from typing import Optional
 
 from fastapi import Body, FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, validator
 
-from .inference import MODEL_NAME, VisionError, predict_bytes
+from .inference import MODEL_NAME, VisionError, predict_bytes, get_model
 
 app = FastAPI(title="Vision Chest API")
+
+
+# Background model loading
+@app.on_event("startup")
+async def load_model_on_startup():
+    """Load the model in the background on startup to warm up the cache."""
+    async def _load():
+        try:
+            print("🔄 Starting background model loading...")
+            # Load model in a separate thread to not block startup
+            await asyncio.to_thread(get_model, MODEL_NAME)
+            print("✅ Model loaded successfully!")
+        except Exception as e:
+            print(f"⚠️  Model loading failed: {e}")
+            # Don't crash the app - model will load on first request
+
+    # Start loading in background
+    asyncio.create_task(_load())
 
 
 class PredictionRequest(BaseModel):
@@ -22,24 +41,33 @@ class PredictionRequest(BaseModel):
 
 @app.post("/predict/cxr")
 async def predict(
-    file: Optional[UploadFile] = File(default=None),
-    payload: Optional[PredictionRequest] = Body(default=None),
+    payload: PredictionRequest = Body(...),
 ) -> JSONResponse:
-    data: Optional[bytes] = None
+    try:
+        data = base64.b64decode(payload.image_base64, validate=True)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Invalid base64 payload: {exc}") from exc
 
-    if file is not None:
-        data = await file.read()
-        if not data:
-            raise HTTPException(status_code=400, detail="Empty upload.")
+    try:
+        predictions = predict_bytes(data, top_n=5)
+    except VisionError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    elif payload is not None:
-        try:
-            data = base64.b64decode(payload.image_base64, validate=True)
-        except Exception as exc:
-            raise HTTPException(status_code=400, detail=f"Invalid base64 payload: {exc}") from exc
+    return JSONResponse(
+        {
+            "model": MODEL_NAME,
+            "top5": [p.dict() for p in predictions],
+        }
+    )
 
-    if data is None:
-        raise HTTPException(status_code=400, detail="Provide either a file upload or JSON payload.")
+
+@app.post("/predict/cxr/upload")
+async def predict_upload(
+    file: UploadFile = File(...),
+) -> JSONResponse:
+    data = await file.read()
+    if not data:
+        raise HTTPException(status_code=400, detail="Empty upload.")
 
     try:
         predictions = predict_bytes(data, top_n=5)

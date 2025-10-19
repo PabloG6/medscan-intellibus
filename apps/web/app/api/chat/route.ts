@@ -126,7 +126,6 @@ export async function POST(request: Request) {
     };
   } else {
     const primaryAttachment = attachments[0];
-    console.log(primaryAttachment.dataUrl);
     const analysis = await analyzeCTScan(primaryAttachment.dataUrl);
 
     const labels: ImageLabel[] = analysis.bounding_boxes.map((bbox, index) => {

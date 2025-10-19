@@ -21,7 +21,8 @@
   },
   "vars": {
     "NEXT_PUBLIC_BASE_URL": "http://localhost:8787",
-    "ENVIRONMENT": "development"
+    "ENVIRONMENT": "development",
+    "VISION_API_URL": "http://localhost:8000"
   },
   "kv_namespaces": [
     {
@@ -53,7 +54,8 @@
       "name": "intellibus-web-prod-production",
       "vars": {
         "NEXT_PUBLIC_BASE_URL": "https://intellibus-web-prod-production.glues-gliders0w.workers.dev",
-        "ENVIRONMENT": "production"
+        "ENVIRONMENT": "production",
+        "VISION_API_URL": "https://intellibus-api-vision-1.fly.dev"
       },
       "kv_namespaces": [
         {
