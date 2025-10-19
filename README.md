@@ -57,17 +57,11 @@ Doctors currently spend significant time **manually reviewing medical scans**, c
 2. **AI Analysis** → Vision model runs detection in real time.  
 3. **Results & Highlights** → Abnormalities are outlined and ranked by confidence.
 
-```json
-{
-  "scan_id": "CT-7843",
-  "confidence": 0.95,
-  "findings": ["Lesion Detected", "Possible Fluid Build-up"],
-  "priority": "High"
-}
-
 ---
 
 # 💻 Developer Information
+
+Informaation for developer looking to make this project their own or looking for some inspiration.
 
 ## Packages
 
