@@ -67,7 +67,7 @@ Doctors currently spend significant time **manually reviewing medical scans**, c
 
 ---
 
-# Developer Information
+# 💻 Developer Information
 
 ## Packages
 
