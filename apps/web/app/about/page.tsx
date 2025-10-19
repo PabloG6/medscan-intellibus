@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function AboutPage() {
   return (
     <div className="bg-white text-slate-900">
@@ -81,9 +83,9 @@ export default function AboutPage() {
               
               {/* CTA Buttons */}
               <div className="flex flex-wrap justify-center gap-4">
-                <a href="/login" className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-800 transition-colors inline-block">
+                <Link href="/create-account" className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-800 transition-colors inline-block">
                   Get Started
-                </a>
+                </Link>
                 <a href="#mission" className="border border-slate-300 text-slate-700 px-6 py-3 rounded-lg font-medium hover:bg-white hover:border-slate-400 transition-colors inline-block">
                   Learn More
                 </a>
