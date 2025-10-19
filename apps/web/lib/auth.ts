@@ -49,20 +49,24 @@ export const authBuilder = async () => {
                     additionalFields: {
                         customerId: {
                             type: 'string',
-                            required: false
+                            required: false,
+                            input: false // System-generated, not user input
                         },
                         organization: {
                             type: 'string',
-                            required: true
+                            required: true,
+                            input: true // User provides this during signup
                         },
                         receiveUpdates: {
                             type: 'boolean',
                             required: false,
-                            defaultValue: false
+                            defaultValue: false,
+                            input: true // User provides this during signup
                         },
                         acceptedTermsAt: {
                             type: 'date',
-                            required: true
+                            required: false, // Set by system in database hook
+                            input: false // System-generated, not user input
                         }
                     }
                 },
@@ -80,8 +84,16 @@ export const authBuilder = async () => {
                 },
                 databaseHooks: {
                     user: {
-
                         create: {
+                            before: async (user) => {
+                                // Set acceptedTermsAt when user signs up
+                                return {
+                                    data: {
+                                        ...user,
+                                        acceptedTermsAt: new Date()
+                                    }
+                                }
+                            },
                             after: async (user) => {
                             }
                         },

@@ -15,6 +15,13 @@
       "when": 1760834000000,
       "tag": "0001_add_user_onboarding_fields",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1760855611438,
+      "tag": "0002_breezy_network",
+      "breakpoints": true
     }
   ]
 }

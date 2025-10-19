@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { ShieldCheck, Activity, BarChart3, Hospital, Lock } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -28,9 +29,7 @@ const createAccountSchema = z
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")
-      .regex(/[A-Z]/, "Include at least one uppercase letter")
-      .regex(/[a-z]/, "Include at least one lowercase letter")
-      .regex(/\d/, "Include at least one number"),
+,
     confirmPassword: z.string().min(8, "Confirm your password"),
     receiveUpdates: z.boolean(),
     acceptTerms: z.boolean(),
@@ -75,7 +74,7 @@ const benefits = [
 ]
 
 export default function CreateAccountPage() {
-  const [successMessage, setSuccessMessage] = React.useState<string | null>(null)
+  const router = useRouter()
   const [serverError, setServerError] = React.useState<string | null>(null)
   const form = useForm<CreateAccountFormValues>({
     resolver: zodResolver(createAccountSchema),
@@ -85,43 +84,29 @@ export default function CreateAccountPage() {
   const isSubmitting = form.formState.isSubmitting
 
   async function handleSubmit(values: CreateAccountFormValues) {
-    setSuccessMessage(null)
     setServerError(null)
 
     try {
-      const payload = {
+      const { data, error } = await authClient.signUp.email({
         name: values.fullName.trim(),
         email: values.email.trim().toLowerCase(),
         password: values.password,
         organization: values.organization.trim(),
         receiveUpdates: values.receiveUpdates,
-        acceptedTermsAt: new Date().toISOString(),
-      }
-
-      const response = await authClient.$fetch("/sign-up/email", {
-        method: "POST",
-        body: payload,
       })
 
-      if ("error" in response && response.error) {
-        const { message, status } = response.error
+      if (error) {
         const friendlyMessage =
-          message ??
-          (status === 422
+          error.message ??
+          (error.status === 422
             ? "Please double-check the form details and try again."
             : "We couldn't complete your request right now. Please try again shortly.")
         setServerError(friendlyMessage)
         return
       }
 
-      const registeredEmail = response.data?.user?.email ?? values.email
-      setSuccessMessage(
-        `Access request received for ${registeredEmail}. Our onboarding team will contact you within one business day.`,
-      )
-      form.reset({
-        ...defaultValues,
-        receiveUpdates: values.receiveUpdates,
-      })
+      // Redirect to dashboard on success
+      router.push("/dashboard")
     } catch {
       setServerError("Something went wrong while creating your account. Please try again.")
     }
@@ -209,11 +194,6 @@ export default function CreateAccountPage() {
                   {serverError ? (
                     <div className="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                       {serverError}
-                    </div>
-                  ) : null}
-                  {successMessage ? (
-                    <div className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-                      {successMessage}
                     </div>
                   ) : null}
                   <Form {...form}>
@@ -323,9 +303,7 @@ export default function CreateAccountPage() {
                                   <Checkbox
                                     id={field.name}
                                     checked={field.value}
-                                    ref={field.ref}
-                                    onBlur={field.onBlur}
-                                    onCheckedChange={(checked) => field.onChange(checked === true)}
+                                    onCheckedChange={field.onChange}
                                   />
                                 </FormControl>
                                 <div className="space-y-1 leading-none">
@@ -352,9 +330,7 @@ export default function CreateAccountPage() {
                                   <Checkbox
                                     id={field.name}
                                     checked={field.value}
-                                    ref={field.ref}
-                                    onBlur={field.onBlur}
-                                    onCheckedChange={(checked) => field.onChange(checked === true)}
+                                    onCheckedChange={field.onChange}
                                   />
                                 </FormControl>
                                 <div className="space-y-1 leading-none">
@@ -431,18 +407,6 @@ export default function CreateAccountPage() {
           </div>
         </div>
       </div>
-
-      {isSubmitting ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm">
-          <div className="space-y-4 text-center text-white">
-            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/30 border-t-white" />
-            <div>
-              <p className="text-lg font-semibold">Provisioning account...</p>
-              <p className="text-sm text-white/70">This keeps patient data protected while we verify your details.</p>
-            </div>
-          </div>
-        </div>
-      ) : null}
     </div>
   )
 }

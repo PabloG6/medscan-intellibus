@@ -3,6 +3,7 @@ import { z } from "zod"
 import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc"
 
 export const appRouter = createTRPCRouter({
+  createPatient: publicProcedure.input(z.object({name: z.string()})).mutation(({input}) => {}),
   health: publicProcedure.query(() => ({
     status: "ok",
     timestamp: new Date().toISOString(),

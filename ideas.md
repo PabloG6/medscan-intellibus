@@ -27,7 +27,7 @@ const models = [
 //initial call to figure out intent
     const question = "Does this user have a fracture";
     const result = await generateText({
-                            model: googleProvider('google-gemini-1.5-latest'),
+                            model: googleProvider('google-gemini-2.5-flas'),
                             schema: zodSchema, // Single object schema, not array
                             messages: [{
                                 role: 'user',

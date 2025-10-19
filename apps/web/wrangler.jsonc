@@ -33,7 +33,8 @@
     {
       "binding": "DB",
       "database_name": "intellibus-dev",
-      "database_id": "local"
+      "database_id": "local",
+      "migrations_dir": "../../packages/db/drizzle"
     }
   ],
   "observability": {
