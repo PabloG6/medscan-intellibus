@@ -1,0 +1,64 @@
+Metadata-Version: 2.4
+Name: vision
+Version: 0.1.0
+Summary: Developer-friendly vision utilities and API for chest X-ray inference.
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: datasets
+Requires-Dist: fastapi
+Requires-Dist: grad-cam
+Requires-Dist: numpy
+Requires-Dist: opencv-python
+Requires-Dist: pillow
+Requires-Dist: pydicom
+Requires-Dist: python-multipart
+Requires-Dist: scikit-image
+Requires-Dist: torch
+Requires-Dist: torchvision
+Requires-Dist: torchxrayvision
+Requires-Dist: tqdm
+Requires-Dist: uvicorn
+Provides-Extra: dev
+Requires-Dist: httpx; extra == "dev"
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: pytest-asyncio; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+Requires-Dist: uvicorn[standard]; extra == "dev"
+
+# Vision Tooling
+
+This package bundles the chest X-ray inference scripts and FastAPI service that
+previously lived in the monorepo root.
+
+## Quickstart
+
+```bash
+cd vision
+python -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+```
+
+### Run the API
+
+```bash
+uvicorn vision.api:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Run the CLI
+
+```bash
+python -m vision.scripts.chest path/to/image.dcm
+```
+
+### Download Sample Images
+
+```bash
+python -m vision.scripts.download_samples --limit 10 --out samples
+```
+
+## Repository Notes
+
+- All Python sources live under `vision/src/vision`.
+- Entry points live in `vision/scripts`.
+- Dependencies are managed through `vision/pyproject.toml`.

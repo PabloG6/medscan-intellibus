@@ -1,0 +1,3 @@
+[console_scripts]
+vision-chest = vision.scripts.chest:main
+vision-download-samples = vision.scripts.download_samples:main

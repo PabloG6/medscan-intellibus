@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=67"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vision"
+version = "0.1.0"
+description = "Developer-friendly vision utilities and API for chest X-ray inference."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "datasets",
+    "fastapi",
+    "grad-cam",
+    "numpy",
+    "opencv-python",
+    "pillow",
+    "pydicom",
+    "python-multipart",
+    "scikit-image",
+    "torch",
+    "torchvision",
+    "torchxrayvision",
+    "tqdm",
+    "uvicorn",
+]
+
+[project.optional-dependencies]
+dev = [
+    "httpx",
+    "pytest",
+    "pytest-asyncio",
+    "ruff",
+    "uvicorn[standard]",
+]
+
+[project.scripts]
+vision-chest = "vision.scripts.chest:main"
+vision-download-samples = "vision.scripts.download_samples:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.uvicorn]
+app = "vision.api:app"
+reload = true
+host = "0.0.0.0"
+port = 8000

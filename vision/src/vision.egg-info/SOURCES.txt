@@ -1,0 +1,13 @@
+README.md
+pyproject.toml
+src/vision/__init__.py
+src/vision/api.py
+src/vision/inference.py
+src/vision.egg-info/PKG-INFO
+src/vision.egg-info/SOURCES.txt
+src/vision.egg-info/dependency_links.txt
+src/vision.egg-info/entry_points.txt
+src/vision.egg-info/requires.txt
+src/vision.egg-info/top_level.txt
+src/vision/data/__init__.py
+src/vision/data/download.py
